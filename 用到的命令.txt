@@ -1,0 +1,30 @@
+conda activate base
+
+# 更改为国内镜像源
+# windows系统使用cmd快速设置
+pip install pip -U    # 升级pip到最新版本
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+安装Jupyter NbExtensions Configurator：
+pip install jupyter_nbextensions_configurator jupyter_contrib_nbextensions
+jupyter contrib nbextension install --user
+jupyter nbextensions_configurator enable --user
+
+进入juoyter notebook点击Nbextensions：
+下面会介绍勾选的几个插件，不详细介绍，有兴趣的可以到官网（https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/index.html）自行了解。
+
+Hinterland
+勾选此插件为代码单元格中的每次按键启用“代码自动补全”菜单，而不是仅用Tab键时启用。
+
+Codefolding
+这个扩展将代码折叠功能从CodeMirror添加到codecell。
+在编辑模式下，单击边距中的三角形(codecell的左边缘)或键入代码折叠热键(默认为Alt+F)，折叠代码。
+在命令模式下，折叠热键与编解码器的第一行有关。
+
+Table of Contents
+这个插件会根据Markdown的标题层次形成一个目录，可以通过点击目录，直接定位到对应代码位置，在长代码文件中能起到导航的作用。
+
+Collapsible Headings
+允许notebook有可折叠的部分，以标题分开。
+任何标记标题单元格(即以1-6 #字符开头的单元格)在呈现后都是可折叠的。
+标题的折叠/扩展状态存储在单元格元数据中，并在笔记本加载时重新加载。

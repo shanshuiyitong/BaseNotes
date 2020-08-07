@@ -1,0 +1,139 @@
+
+spark作业运行过程中，最消耗性能的地方就是shuffle过程。shuffle过程，简单来说，就是将分布在集群中多个节点上的同一个key，拉取到同一个节点上，进行聚合或join等操作。比如reduceByKey、join等算子，都会触发shuffle操作
+
+
+shuffle过程中，各个节点上的相同key都会先写入本地磁盘文件中，然后其他节点需要通过网络传输拉取各个节点上的磁盘文件中的相同key。而且相同key都拉取到同一个节点进行聚合操作时，还有可能会因为一个节点上处理的key过多，导致内存不够存放，进而溢写到磁盘文件中。因此在shuffle过程中，可能会发生大量的磁盘文件读写的IO操作，以及数据的网络传输操作。磁盘IO和网络数据传输也是shuffle性能较差的主要原因
+
+
+所谓的map-side预聚合，说的是在每个节点本地对相同的key进行一次聚合操作，类似于MapReduce中的本地combiner
+
+
+
+Spark中，主要有三个地方涉及到了序列化：
+	引外部变量时，该变量会被序列化后进行网络传输（见“原则七：广播大变量”中的讲解）。
+	将自定义的类型作为RDD的泛型类型时（比如JavaRDD，Student是自定义类型），所有自定义类型对象，都会进行序列化	
+	使用可序列化的持久化策略时（比如MEMORY_ONLY_SER），Spark会将RDD中的每个partition都序列化成一个大的字节数组
+
+
+Kryo序列化机制比Java序列化机制，性能高10倍左右
+
+
+Java中，有三种类型比较耗费内存：
+ *对象，每个Java对象都有对象头、引用等额外的信息，因此比较占用内存空间 
+ *字符串，每个字符串内部都有一个字符数组以及长度等额外信息。
+*集合类型，比如HashMap、LinkedList等，因为集合类型内部通常会使用一些内部类来封装集合元素
+
+
+RPC(Remote Procedure Call Protocol)
+	远程过程调用协议,它是一种通过网络从远程计算机程序上请求服务
+
+
+
+1系统初始化
+IP地址
+IPtable、selinux关闭服务 
+	iptable -Ln && stop disable
+	setenforce 0 
+	SELINUX=disabled
+主机名称解析hostname设置
+	vim /etc/hosts
+集群主机免密登录
+	sshd
+配置仓库服务
+	/etc/yum.repo.d/xxx.repo
+时钟同步服务
+	ntpd /chorny
+2.集群服务配置
+Java环境配置
+上传压缩包 -二进制包，开箱即用
+修改配置文件
+3.启动服务
+检查服务启动正常
+4.监控服务是否正常
+HDFS页面监控，jmx、爬虫抓取页面信息、report命令检查状态
+
+server 192.168.222.2  iburst
+allow 192.168.0.0/24
+local stratum 10
+
+timedatectl 命令查看：NTP synchronized状态
+
+
+
+
+
+
+hdfs haadmin -getServiceState nn1 | nn2
+active standby
+hadoop dfsadmin -safemode get
+必须要等待安全模式正常退出（加载元数据过程）
+rebalance.sh 
+
+hadoop dfsadmin -refreshNodes
+
+decomission
+复制技术
+
+hbase
+
+create 'student','info';
+alter 'student','class';
+put 'student','101','info:name','zhangsan';
+put 'student','101','info:age','20';
+put 'student','101','info:address','beijing';
+put 'student','101','info:sex','f';
+
+scan
+get
+cell:rowkey,columnfamily,qualify,timestamp version
+
+
+df.select("name").show()
+
+df.select($"name", $"age" + 1).show()
+df.filter($"age" > 21).show()
+
+
+df.select(col("name"), col("age").plus(1)).show();
+df.select(df['name'], df['age'] + 1).show()
+
+val sqlDF = spark.sql("SELECT * FROM people")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
